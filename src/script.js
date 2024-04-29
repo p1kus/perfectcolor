@@ -1,44 +1,46 @@
-"use strict";
+import generateHex from "./generateHex.js";
 let backgroundColorInput;
 let textColorInput;
 let textColorPalette;
 let backgroundColorPalette;
 let body;
+let contrastRatioHeader;
+let randomizeButton;
+let swapButton;
 const domElements = () => {
+    contrastRatioHeader = document.querySelector("#contrastRatioHeader");
     backgroundColorInput = document.querySelector("#backgroundColorInput");
     textColorInput = document.querySelector("#textColorInput");
     textColorPalette = document.querySelector("#textColorPicker");
     backgroundColorPalette = document.querySelector("#backgroundColorPicker");
+    randomizeButton = document.querySelectorAll("svg");
+    swapButton = document.querySelector("#btn-swap");
     body = document.querySelector("body");
 };
-const pickTextCFromPalette = () => {
-    textColorPalette?.addEventListener("change", (e) => {
-        console.log(e.target.value);
-        e.target.style.background = e.target.value;
-        // backgroundColorInput?.setAttribute("value", e.target.value);
-        textColorInput?.setAttribute("value", e.target.value);
-        if (body) {
-            body.style.color = e.target.value;
-        }
-        if (backgroundColorInput) {
-            backgroundColorInput.style.color = e.target.value;
-        }
-        if (textColorInput) {
-            textColorInput.style.color = e.target.value;
-        }
-    });
+const pickTextCFromPalette = (e) => {
+    e.target.style.background = e.target.value;
+    textColorInput.setAttribute("value", e.target.value);
+    if (body) {
+        body.style.color = e.target.value;
+    }
+    if (backgroundColorInput) {
+        backgroundColorInput.style.color = e.target.value;
+    }
+    if (textColorInput) {
+        textColorInput.style.color = e.target.value;
+    }
+    updateContrastRatio();
 };
 const pickBackgroundCFromPalette = (e) => {
-    console.log(e.target.value);
     e.target.style.background = e.target.value;
-    textColorInput?.setAttribute("value", e.target.value);
+    backgroundColorInput.value = e.target.value;
     if (body) {
         body.style.backgroundColor = e.target.value;
     }
 };
 const pickTextCFromInput = (e) => {
     console.log(e.target.value);
-    textColorInput?.setAttribute("value", e.target.value);
+    textColorPalette.value = e.target.value;
     if (body) {
         body.style.color = e.target.value;
     }
@@ -55,7 +57,7 @@ const getContrastRatio = (hex1, hex2) => {
     const lum1 = getLuminance(rgb1);
     const lum2 = getLuminance(rgb2);
     const contrastRatio = (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
-    return contrastRatio;
+    return contrastRatio.toFixed(2);
 };
 const hexToRgb = (hex) => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -72,16 +74,53 @@ const getLuminance = (rgb) => {
     });
     return 0.2126 * lRGB[0] + 0.7152 * lRGB[1] + 0.0722 * lRGB[2];
 };
+const updateContrastRatio = () => {
+    if (contrastRatioHeader) {
+        contrastRatioHeader.textContent = `Contrast Ratio: ${getContrastRatio(backgroundColorInput.value, textColorInput.value)}`;
+    }
+};
+const updateTextC = (e) => {
+    textColorInput.value = e.target.value;
+    body.style.color = e.target.value;
+    updateContrastRatio();
+};
 const domEvents = () => {
     if (textColorPalette) {
-        textColorPalette.style.background = "#eeecf2";
+        textColorPalette.style.background = textColorInput.value;
     }
     if (backgroundColorPalette) {
-        backgroundColorPalette.style.background = "#55505b";
+        backgroundColorPalette.style.background = backgroundColorInput.value;
     }
     textColorPalette?.addEventListener("change", pickTextCFromPalette);
     backgroundColorPalette?.addEventListener("change", (e) => pickBackgroundCFromPalette(e));
-    textColorInput?.addEventListener("change", pickTextCFromInput);
+    textColorInput?.addEventListener("change", (e) => {
+        pickTextCFromInput(e);
+        updateTextC(e);
+    });
+    randomizeButton?.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            if (e.target.classList.value.indexOf("btn-random-background") !== -1) {
+                let randomBackgroundHex = generateHex();
+                backgroundColorInput.value = randomBackgroundHex;
+                body.style.backgroundColor = randomBackgroundHex;
+            }
+            else if (e.target.classList.value.indexOf("btn-random-text") !== -1) {
+                let randomTextHex = generateHex();
+                textColorInput.value = randomTextHex;
+                body.style.color = randomTextHex;
+            }
+            updateContrastRatio();
+        });
+    });
+    swapButton?.addEventListener("click", () => {
+        const temp = backgroundColorInput.value;
+        backgroundColorInput.value = textColorInput.value;
+        textColorInput.value = temp;
+        body.style.backgroundColor = backgroundColorInput.value;
+        body.style.color = textColorInput.value;
+        updateContrastRatio();
+    });
+    body?.addEventListener("change", updateContrastRatio);
 };
 const main = () => {
     domElements();
