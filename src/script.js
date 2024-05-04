@@ -7,17 +7,43 @@ let body;
 let contrastRatioHeader;
 let randomizeButton;
 let swapButton;
+//
 const domElements = () => {
     contrastRatioHeader = document.querySelector("#contrastRatioHeader");
+    if (contrastRatioHeader === null) {
+        console.error("Element not found");
+    }
     backgroundColorInput = document.querySelector("#backgroundColorInput");
+    if (!backgroundColorInput) {
+        console.error("Element not found");
+    }
     textColorInput = document.querySelector("#textColorInput");
+    if (!textColorInput) {
+        console.error("Element not found");
+    }
     textColorPalette = document.querySelector("#textColorPicker");
+    if (!textColorPalette) {
+        console.error("Element not found");
+    }
     backgroundColorPalette = document.querySelector("#backgroundColorPicker");
+    if (!backgroundColorPalette) {
+        console.error("Element not found");
+    }
     randomizeButton = document.querySelectorAll("svg");
+    if (!randomizeButton) {
+        console.error("Element not found");
+    }
     swapButton = document.querySelector("#btn-swap");
+    if (!swapButton) {
+        console.error("Element not found");
+    }
     body = document.querySelector("body");
+    if (!body) {
+        console.error("Element not found");
+    }
 };
 const pickTextCFromPalette = (e) => {
+    console.log(e.target);
     e.target.style.background = e.target.value;
     textColorInput.setAttribute("value", e.target.value);
     if (body) {
@@ -103,11 +129,15 @@ const domEvents = () => {
                 let randomBackgroundHex = generateHex();
                 backgroundColorInput.value = randomBackgroundHex;
                 body.style.backgroundColor = randomBackgroundHex;
+                backgroundColorPalette.style.backgroundColor = randomBackgroundHex;
             }
             else if (e.target.classList.value.indexOf("btn-random-text") !== -1) {
                 let randomTextHex = generateHex();
                 textColorInput.value = randomTextHex;
                 body.style.color = randomTextHex;
+                textColorPalette.style.backgroundColor = randomTextHex;
+                textColorInput.style.color = randomTextHex;
+                backgroundColorInput.style.color = randomTextHex;
             }
             updateContrastRatio();
         });

@@ -57,6 +57,7 @@ const domElements = () => {
 };
 
 const pickTextCFromPalette = (e: any) => {
+  console.log(e.target);
   e.target.style.background = e.target.value;
   textColorInput!.setAttribute("value", e.target.value);
   if (body) {
@@ -161,14 +162,16 @@ const domEvents = () => {
         let randomBackgroundHex = generateHex();
         backgroundColorInput!.value = randomBackgroundHex;
         body!.style.backgroundColor = randomBackgroundHex;
-        textColorPalette!.value = randomBackgroundHex;
+        backgroundColorPalette.style.backgroundColor = randomBackgroundHex;
       } else if (
         (e.target as Element).classList.value.indexOf("btn-random-text") !== -1
       ) {
         let randomTextHex = generateHex();
         textColorInput!.value = randomTextHex;
         body!.style.color = randomTextHex;
-        backgroundColorPalette!.value = randomTextHex;
+        textColorPalette.style.backgroundColor = randomTextHex;
+        textColorInput!.style.color = randomTextHex;
+        backgroundColorInput!.style.color = randomTextHex;
       }
 
       updateContrastRatio();
