@@ -137,6 +137,32 @@ const updateTextC = (e: any) => {
   updateContrastRatio();
 };
 
+const randomize = () => {
+  if (
+    (randomizeButton[0] as Element).classList.value.indexOf(
+      "btn-random-background"
+    ) !== -1
+  ) {
+    let randomBackgroundHex = generateHex();
+    backgroundColorInput!.value = randomBackgroundHex;
+    body!.style.backgroundColor = randomBackgroundHex;
+    backgroundColorPalette.style.backgroundColor = randomBackgroundHex;
+  } else if (
+    (randomizeButton[1] as Element).classList.value.indexOf(
+      "btn-random-text"
+    ) !== -1
+  ) {
+    let randomTextHex = generateHex();
+    textColorInput!.value = randomTextHex;
+    body!.style.color = randomTextHex;
+    textColorPalette.style.backgroundColor = randomTextHex;
+    textColorInput!.style.color = randomTextHex;
+    backgroundColorInput!.style.color = randomTextHex;
+  }
+
+  updateContrastRatio();
+};
+
 const domEvents = () => {
   if (textColorPalette) {
     textColorPalette.style.background = textColorInput!.value;
@@ -154,27 +180,7 @@ const domEvents = () => {
   });
   randomizeButton?.forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      if (
-        (e.target as Element).classList.value.indexOf(
-          "btn-random-background"
-        ) !== -1
-      ) {
-        let randomBackgroundHex = generateHex();
-        backgroundColorInput!.value = randomBackgroundHex;
-        body!.style.backgroundColor = randomBackgroundHex;
-        backgroundColorPalette.style.backgroundColor = randomBackgroundHex;
-      } else if (
-        (e.target as Element).classList.value.indexOf("btn-random-text") !== -1
-      ) {
-        let randomTextHex = generateHex();
-        textColorInput!.value = randomTextHex;
-        body!.style.color = randomTextHex;
-        textColorPalette.style.backgroundColor = randomTextHex;
-        textColorInput!.style.color = randomTextHex;
-        backgroundColorInput!.style.color = randomTextHex;
-      }
-
-      updateContrastRatio();
+      randomize();
     });
   });
   swapButton?.addEventListener("click", () => {
