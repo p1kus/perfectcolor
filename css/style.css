@@ -26,7 +26,25 @@ body {
     width: 100%;
     /* text-align: center; */
     h1 {
-      font-size: 8rem;
+      font-size: 6rem;
+      font-weight: lighter;
+      span {
+        position: relative;
+        top: 8px;
+        font-family: "Caveat";
+        font-size: 12rem;
+        /* this svg is for header underline */
+        svg {
+          position: relative;
+          top: 47px;
+          left: -250px;
+          margin: 0;
+          padding: 0;
+          width: 250px;
+          height: 100px;
+          z-index: -1;
+        }
+      }
     }
     p {
       font-size: 2rem;
@@ -35,10 +53,18 @@ body {
   main {
     display: flex;
     flex-direction: column;
-    height: 80vh;
   }
 
   @scope (main) {
+    a {
+      svg {
+        padding: 10px;
+        transition: transform 0.3s;
+      }
+    }
+    a:hover svg {
+      transform: scale(1.1);
+    }
     .sample-text {
       h2 {
         font-size: 8rem;
@@ -71,9 +97,9 @@ body {
           width: 50px;
           height: 50px;
           margin-right: 20px;
-          border: 2px solid;
+          border: 3px solid;
           color: #ffffff;
-          border-color: #eeecf2;
+          border-color: #383838;
           padding: 20px;
           font-size: 3rem;
           letter-spacing: 3px;
@@ -101,9 +127,15 @@ body {
           bottom: 20px;
           right: 18px;
           padding: 10px;
-          fill: white;
+          border-radius: 10px;
+          fill: #eeecf2;
+          stroke: #383838;
           cursor: pointer;
           z-index: 1;
+          transition: transform 0.3s;
+        }
+        svg:hover {
+          transform: scale(1.1);
         }
         path {
           pointer-events: none;
@@ -135,6 +167,11 @@ body {
         left: 41%;
         margin-right: 10px;
         cursor: pointer;
+        stroke: #eeecf2;
+        transition: transform 0.3s;
+      }
+      svg:hover {
+        transform: scale(1.1);
       }
     }
     .cards-container {
@@ -145,7 +182,6 @@ body {
         padding: 18px;
         width: 25%;
         height: 300px;
-        border: 2px solid #fff;
         border-radius: 10px;
         .card-img {
         }
@@ -163,6 +199,115 @@ body {
     margin-top: 60px;
     h6 {
       font-size: 2rem;
+    }
+  }
+}
+
+@media screen and (max-width: 468px) {
+  .container {
+    header {
+      h1 {
+        font-size: 4rem;
+        span {
+          font-size: 8rem;
+          svg {
+            position: relative;
+            top: 50px;
+            left: 00px;
+            margin: 0;
+            padding: 0;
+            width: 150px;
+            /* height: 100px; */
+            z-index: -1;
+          }
+        }
+      }
+      p {
+        font-size: 1.6rem;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) and (min-width: 469px) {
+  .container {
+    header {
+      h1 {
+        font-size: 4rem;
+        span {
+          font-size: 8rem;
+          svg {
+            position: relative;
+            top: 50px;
+            left: -150px;
+            margin: 0;
+            padding: 0;
+            width: 140px;
+            height: 100px;
+            z-index: -1;
+          }
+        }
+      }
+      p {
+        font-size: 1.6rem;
+      }
+    }
+    main {
+      .sample-text {
+        h2 {
+          font-size: 4rem;
+        }
+        p {
+          font-size: 1.6rem;
+        }
+      }
+      .inputs-container {
+        div {
+          input[type="text"] {
+            font-size: 2.4rem;
+          }
+          input[type="color"] {
+            width: 40px;
+            height: 40px;
+            font-size: 2.4rem;
+          }
+          svg {
+            width: 52px;
+            height: 52px;
+            bottom: 10px;
+            right: 10px;
+            padding: 8px;
+          }
+        }
+      }
+      .buttons-container {
+        button {
+          font-size: 1.6rem;
+        }
+        svg {
+          width: 32px;
+          height: 32px;
+          padding: 8px;
+        }
+      }
+      .cards-container {
+        .card {
+          padding: 12px;
+          width: 80%;
+          height: 200px;
+          .card-header {
+            font-size: 2.4rem;
+          }
+          .card-text {
+            font-size: 1.4rem;
+          }
+        }
+      }
+    }
+    footer {
+      h6 {
+        font-size: 1.6rem;
+      }
     }
   }
 }

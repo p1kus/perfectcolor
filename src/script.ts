@@ -1,95 +1,98 @@
 import generateHex from "./generateHex.js";
 
-let backgroundColorInput: HTMLInputElement;
-let textColorInput: HTMLInputElement;
-let textColorPalette: HTMLInputElement;
-let backgroundColorPalette: HTMLInputElement;
-let body: HTMLBodyElement;
-let contrastRatioHeader: HTMLHeadingElement;
-let randomizeButton: NodeList;
-let swapButton: HTMLButtonElement;
-
-//
-
 const domElements = () => {
-  contrastRatioHeader = document.querySelector(
+  const contrastRatioHeader = document.querySelector(
     "#contrastRatioHeader"
   ) as HTMLHeadingElement;
-  if (contrastRatioHeader === null) {
-    console.error("Element not found");
+  if (!contrastRatioHeader) {
+    console.error("Contrast ratio header not found");
   }
-  backgroundColorInput = document.querySelector(
+  const backgroundColorInput = document.querySelector(
     "#backgroundColorInput"
   ) as HTMLInputElement;
   if (!backgroundColorInput) {
-    console.error("Element not found");
+    console.error("backgroundColorInput not found");
   }
-  textColorInput = document.querySelector(
+  const textColorInput = document.querySelector(
     "#textColorInput"
   ) as HTMLInputElement;
   if (!textColorInput) {
-    console.error("Element not found");
+    console.error("textColorInput not found");
   }
-  textColorPalette = document.querySelector(
+  const textColorPalette = document.querySelector(
     "#textColorPicker"
   ) as HTMLInputElement;
   if (!textColorPalette) {
     console.error("Element not found");
   }
-  backgroundColorPalette = document.querySelector(
+  const backgroundColorPalette = document.querySelector(
     "#backgroundColorPicker"
   ) as HTMLInputElement;
   if (!backgroundColorPalette) {
     console.error("Element not found");
   }
-  randomizeButton = document.querySelectorAll("svg") as NodeList;
+  const randomizeButton = document.querySelectorAll("svg") as NodeList;
   if (!randomizeButton) {
     console.error("Element not found");
   }
-  swapButton = document.querySelector("#btn-swap") as HTMLButtonElement;
+  const swapButton = document.querySelector("#btn-swap") as HTMLButtonElement;
   if (!swapButton) {
     console.error("Element not found");
   }
-  body = document.querySelector("body") as HTMLBodyElement;
+  const body = document.querySelector("body") as HTMLBodyElement;
   if (!body) {
     console.error("Element not found");
   }
+  const gradientC1 = document.querySelector("#stop1") as SVGStopElement;
+  if (!gradientC1) {
+    console.error("Element not found");
+  }
+  const gradientC2 = document.querySelector("#stop2") as SVGStopElement;
+  if (!gradientC2) {
+    console.error("Element not found");
+  }
+  return {
+    contrastRatioHeader,
+    backgroundColorInput,
+    textColorInput,
+    textColorPalette,
+    backgroundColorPalette,
+    randomizeButton,
+    swapButton,
+    body,
+    gradientC1,
+    gradientC2,
+  };
 };
 
+const {
+  contrastRatioHeader,
+  backgroundColorInput,
+  textColorInput,
+  textColorPalette,
+  backgroundColorPalette,
+  randomizeButton,
+  swapButton,
+  body,
+  gradientC1,
+  gradientC2,
+} = domElements();
+
 const pickTextCFromPalette = (e: any) => {
-  console.log(e.target);
   e.target.style.background = e.target.value;
-  textColorInput!.setAttribute("value", e.target.value);
-  if (body) {
-    body.style.color = e.target.value;
-  }
-  if (backgroundColorInput) {
-    backgroundColorInput.style.color = e.target.value;
-  }
-  if (textColorInput) {
-    textColorInput.style.color = e.target.value;
-  }
+  textColorInput!.value = e.target.value;
+  updateColors();
   updateContrastRatio();
+  updateGradient();
 };
 const pickBackgroundCFromPalette = (e: any) => {
-  e.target.style.background = e.target.value;
   backgroundColorInput!.value = e.target.value;
-  if (body) {
-    body.style.backgroundColor = e.target.value;
-  }
+  updateColors();
+  updateContrastRatio();
+  updateGradient();
 };
 const pickTextCFromInput = (e: any) => {
-  console.log(e.target.value);
   textColorPalette!.value = e.target.value;
-  if (body) {
-    body.style.color = e.target.value;
-  }
-  if (backgroundColorInput) {
-    backgroundColorInput.style.color = e.target.value;
-  }
-  if (textColorInput) {
-    textColorInput.style.color = e.target.value;
-  }
 };
 
 const getContrastRatio = (hex1: string, hex2: string) => {
@@ -131,67 +134,82 @@ const updateContrastRatio = () => {
   }
 };
 
-const updateTextC = (e: any) => {
-  textColorInput!.value = e.target.value;
-  body!.style.color = e.target.value;
-  updateContrastRatio();
-};
-
-const randomize = () => {
-  if (
-    (randomizeButton[0] as Element).classList.value.indexOf(
-      "btn-random-background"
-    ) !== -1
-  ) {
+const randomizeBackground = () => {
+  do {
     let randomBackgroundHex = generateHex();
     backgroundColorInput!.value = randomBackgroundHex;
-    body!.style.backgroundColor = randomBackgroundHex;
     backgroundColorPalette.style.backgroundColor = randomBackgroundHex;
-  } else if (
-    (randomizeButton[1] as Element).classList.value.indexOf(
-      "btn-random-text"
-    ) !== -1
-  ) {
+  } while (
+    parseFloat(
+      getContrastRatio(backgroundColorInput!.value, textColorInput!.value)
+    ) < 4.5
+  );
+};
+const randomizeText = () => {
+  do {
     let randomTextHex = generateHex();
     textColorInput!.value = randomTextHex;
-    body!.style.color = randomTextHex;
-    textColorPalette.style.backgroundColor = randomTextHex;
-    textColorInput!.style.color = randomTextHex;
-    backgroundColorInput!.style.color = randomTextHex;
-  }
+  } while (
+    parseFloat(
+      getContrastRatio(backgroundColorInput!.value, textColorInput!.value)
+    ) < 4.5
+  );
+};
 
-  updateContrastRatio();
+const randomizeBoth = () => {
+  randomizeBackground();
+  randomizeText();
+};
+
+const updateColors = () => {
+  body!.style.backgroundColor = backgroundColorInput!.value;
+  body!.style.color = textColorInput!.value;
+  backgroundColorPalette.style.backgroundColor = backgroundColorInput!.value;
+  backgroundColorPalette.style.borderColor = textColorInput!.value;
+  backgroundColorInput!.style.color = textColorInput!.value;
+  textColorPalette!.style.backgroundColor = textColorInput!.value;
+  textColorPalette!.style.borderColor = textColorInput!.value;
+  textColorInput!.style.color = textColorInput!.value;
+};
+
+const updateGradient = () => {
+  gradientC1.style.stopColor = backgroundColorInput!.value;
+  gradientC2.style.stopColor = textColorInput!.value;
 };
 
 const domEvents = () => {
-  if (textColorPalette) {
-    textColorPalette.style.background = textColorInput!.value;
-  }
-  if (backgroundColorPalette) {
-    backgroundColorPalette.style.background = backgroundColorInput!.value;
-  }
+  updateContrastRatio();
   textColorPalette?.addEventListener("change", pickTextCFromPalette);
   backgroundColorPalette?.addEventListener("change", (e: any) =>
     pickBackgroundCFromPalette(e)
   );
   textColorInput?.addEventListener("change", (e) => {
     pickTextCFromInput(e);
-    updateTextC(e);
   });
   randomizeButton?.forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      randomize();
+      if ((e.target as Element).classList.contains("btn-random-background")) {
+        randomizeBackground();
+      }
+      if ((e.target as Element).classList.contains("btn-random-text")) {
+        randomizeText();
+      }
+      if ((e.target as Element).classList.contains("btn-random-both")) {
+        randomizeBoth();
+      }
+      updateColors();
+      updateContrastRatio();
+      updateGradient();
     });
   });
   swapButton?.addEventListener("click", () => {
     const temp = backgroundColorInput!.value;
     backgroundColorInput!.value = textColorInput!.value;
     textColorInput!.value = temp;
-    body!.style.backgroundColor = backgroundColorInput!.value;
-    body!.style.color = textColorInput!.value;
+    updateColors();
     updateContrastRatio();
+    updateGradient();
   });
-  body?.addEventListener("change", updateContrastRatio);
 };
 
 const main = () => {

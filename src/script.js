@@ -1,81 +1,84 @@
 import generateHex from "./generateHex.js";
-let backgroundColorInput;
-let textColorInput;
-let textColorPalette;
-let backgroundColorPalette;
-let body;
-let contrastRatioHeader;
-let randomizeButton;
-let swapButton;
-//
 const domElements = () => {
-    contrastRatioHeader = document.querySelector("#contrastRatioHeader");
-    if (contrastRatioHeader === null) {
+    const contrastRatioHeader = document.querySelector("#contrastRatioHeader");
+    if (!contrastRatioHeader) {
         console.error("Element not found");
+        throw new Error("contrastRatioHeader not found");
     }
-    backgroundColorInput = document.querySelector("#backgroundColorInput");
+    const backgroundColorInput = document.querySelector("#backgroundColorInput");
     if (!backgroundColorInput) {
         console.error("Element not found");
+        throw new Error("bgInput not found");
     }
-    textColorInput = document.querySelector("#textColorInput");
+    const textColorInput = document.querySelector("#textColorInput");
     if (!textColorInput) {
         console.error("Element not found");
+        throw new Error("txtInput not found");
     }
-    textColorPalette = document.querySelector("#textColorPicker");
+    const textColorPalette = document.querySelector("#textColorPicker");
     if (!textColorPalette) {
         console.error("Element not found");
+        throw new Error("txtPalette not found");
     }
-    backgroundColorPalette = document.querySelector("#backgroundColorPicker");
+    const backgroundColorPalette = document.querySelector("#backgroundColorPicker");
     if (!backgroundColorPalette) {
         console.error("Element not found");
+        throw new Error("bgPalette not found");
     }
-    randomizeButton = document.querySelectorAll("svg");
+    const randomizeButton = document.querySelectorAll("svg");
     if (!randomizeButton) {
         console.error("Element not found");
+        throw new Error("randBtn not found");
     }
-    swapButton = document.querySelector("#btn-swap");
+    const swapButton = document.querySelector("#btn-swap");
     if (!swapButton) {
         console.error("Element not found");
+        throw new Error("swapBtn not found");
     }
-    body = document.querySelector("body");
+    const body = document.querySelector("body");
     if (!body) {
         console.error("Element not found");
+        throw new Error("Body not found????");
     }
+    const gradientC1 = document.querySelector("#stop1");
+    if (!gradientC1) {
+        console.error("Element not found");
+        throw new Error("gC1 not found????");
+    }
+    const gradientC2 = document.querySelector("#stop2");
+    if (!gradientC2) {
+        console.error("Element not found");
+        throw new Error("gC2 not found????");
+    }
+    return {
+        contrastRatioHeader,
+        backgroundColorInput,
+        textColorInput,
+        textColorPalette,
+        backgroundColorPalette,
+        randomizeButton,
+        swapButton,
+        body,
+        gradientC1,
+        gradientC2,
+    };
 };
+const { contrastRatioHeader, backgroundColorInput, textColorInput, textColorPalette, backgroundColorPalette, randomizeButton, swapButton, body, gradientC1, gradientC2, } = domElements();
 const pickTextCFromPalette = (e) => {
-    console.log(e.target);
     e.target.style.background = e.target.value;
-    textColorInput.setAttribute("value", e.target.value);
-    if (body) {
-        body.style.color = e.target.value;
-    }
-    if (backgroundColorInput) {
-        backgroundColorInput.style.color = e.target.value;
-    }
-    if (textColorInput) {
-        textColorInput.style.color = e.target.value;
-    }
+    textColorInput.value = e.target.value;
+    updateColors();
     updateContrastRatio();
+    updateGradient();
 };
 const pickBackgroundCFromPalette = (e) => {
-    e.target.style.background = e.target.value;
     backgroundColorInput.value = e.target.value;
-    if (body) {
-        body.style.backgroundColor = e.target.value;
-    }
+    updateColors();
+    updateContrastRatio();
+    updateGradient();
 };
 const pickTextCFromInput = (e) => {
-    console.log(e.target.value);
     textColorPalette.value = e.target.value;
-    if (body) {
-        body.style.color = e.target.value;
-    }
-    if (backgroundColorInput) {
-        backgroundColorInput.style.color = e.target.value;
-    }
-    if (textColorInput) {
-        textColorInput.style.color = e.target.value;
-    }
 };
 const getContrastRatio = (hex1, hex2) => {
     const rgb1 = hexToRgb(hex1);
@@ -105,55 +108,66 @@ const updateContrastRatio = () => {
         contrastRatioHeader.textContent = `Contrast Ratio: ${getContrastRatio(backgroundColorInput.value, textColorInput.value)}`;
     }
 };
-const updateTextC = (e) => {
-    textColorInput.value = e.target.value;
-    body.style.color = e.target.value;
-    updateContrastRatio();
-};
-const randomize = () => {
-    if (randomizeButton[0].classList.value.indexOf("btn-random-background") !== -1) {
+const randomizeBackground = () => {
+    do {
         let randomBackgroundHex = generateHex();
         backgroundColorInput.value = randomBackgroundHex;
-        body.style.backgroundColor = randomBackgroundHex;
         backgroundColorPalette.style.backgroundColor = randomBackgroundHex;
-    }
-    else if (randomizeButton[1].classList.value.indexOf("btn-random-text") !== -1) {
+    } while (parseFloat(getContrastRatio(backgroundColorInput.value, textColorInput.value)) < 4.5);
+};
+const randomizeText = () => {
+    do {
         let randomTextHex = generateHex();
         textColorInput.value = randomTextHex;
-        body.style.color = randomTextHex;
-        textColorPalette.style.backgroundColor = randomTextHex;
-        textColorInput.style.color = randomTextHex;
-        backgroundColorInput.style.color = randomTextHex;
-    }
-    updateContrastRatio();
+    } while (parseFloat(getContrastRatio(backgroundColorInput.value, textColorInput.value)) < 4.5);
+};
+const randomizeBoth = () => {
+    randomizeBackground();
+    randomizeText();
+};
+const updateColors = () => {
+    body.style.backgroundColor = backgroundColorInput.value;
+    body.style.color = textColorInput.value;
+    backgroundColorPalette.style.backgroundColor = backgroundColorInput.value;
+    backgroundColorInput.style.color = textColorInput.value;
+    textColorPalette.style.backgroundColor = textColorInput.value;
+    textColorInput.style.color = textColorInput.value;
+};
+const updateGradient = () => {
+    gradientC1.style.stopColor = backgroundColorInput.value;
+    gradientC2.style.stopColor = textColorInput.value;
 };
 const domEvents = () => {
-    if (textColorPalette) {
-        textColorPalette.style.background = textColorInput.value;
-    }
-    if (backgroundColorPalette) {
-        backgroundColorPalette.style.background = backgroundColorInput.value;
-    }
+    updateContrastRatio();
     textColorPalette?.addEventListener("change", pickTextCFromPalette);
     backgroundColorPalette?.addEventListener("change", (e) => pickBackgroundCFromPalette(e));
     textColorInput?.addEventListener("change", (e) => {
         pickTextCFromInput(e);
-        updateTextC(e);
     });
     randomizeButton?.forEach((btn) => {
         btn.addEventListener("click", (e) => {
-            randomize();
+            if (e.target.classList.contains("btn-random-background")) {
+                randomizeBackground();
+            }
+            if (e.target.classList.contains("btn-random-text")) {
+                randomizeText();
+            }
+            if (e.target.classList.contains("btn-random-both")) {
+                randomizeBoth();
+            }
+            updateColors();
+            updateContrastRatio();
+            updateGradient();
         });
     });
     swapButton?.addEventListener("click", () => {
         const temp = backgroundColorInput.value;
         backgroundColorInput.value = textColorInput.value;
         textColorInput.value = temp;
-        body.style.backgroundColor = backgroundColorInput.value;
-        body.style.color = textColorInput.value;
+        updateColors();
         updateContrastRatio();
+        updateGradient();
     });
-    body?.addEventListener("change", updateContrastRatio);
 };
 const main = () => {
     domElements();
