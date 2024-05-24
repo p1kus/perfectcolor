@@ -1,6 +1,6 @@
 # perfectcolor
 
-## Demo
+**Demo**
 
 You can preview this project at:
 
